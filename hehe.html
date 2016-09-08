@@ -15,12 +15,86 @@
 			font-size: 14px;
 			color: #FE4834
 		}
+
+		.clock {
+			position: relative;
+			margin: 100px auto 0;
+			width: 200px;
+			height: 200px;
+			border: 1px solid #e1e1e1;
+			border-radius: 50%;
+			background: #e1e1e1
+		}
+		.clock div {
+			position: absolute;
+			margin: 0;
+			left: 98px;
+			width: 5px;
+			height: 100px;
+			transform-origin: center bottom; 
+			background: #000;
+		}
+		.clock .th {
+			margin-top: 40px;
+			height: 60px;
+			-webkit-transform: rotate(30deg);
+			-ms-transform: rotate(30deg);
+			-o-transform: rotate(30deg);
+			transform: rotate(30deg);
+		}
+		.clock .tm {
+			margin-top: 20px;
+			height: 80px;
+			width: 4px;
+			-webkit-transform: rotate(60deg);
+			-ms-transform: rotate(60deg);
+			-o-transform: rotate(60deg);
+			transform: rotate(60deg);
+		}
+		.clock .ts {
+			width: 2px;
+			-webkit-transform: rotate(45deg);
+			-ms-transform: rotate(45deg);
+			-o-transform: rotate(45deg);
+			transform: rotate(45deg);
+		}
 	</style>
 </head>
 <body>
 	<h1>this is my first file</h1>
 	<h3>no mean</h3>
 	<h5>i think this time, we have a lot of problen, maybe we will die</h5>
+	<div class="clock">
+		<div class="th"></div>
+		<div class="tm"></div>
+		<div class="ts"></div>
+	</div>
 </body>
+	<script>
+		var odivh = document.getElementsByClassName('th')[0];
+		var odivm = document.getElementsByClassName('tm')[0];
+		var odivs = document.getElementsByClassName('ts')[0];
+		
+		getAngle();
+
+		setInterval(getAngle, 1000);
+
+		function getAngle (){
+			var date = new Date();
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			var second = date.getSeconds();
+			if (hours > 12){
+				hours -= 12;
+			}
+			var hdeg = hours / 12 * 360;
+			var mdeg = minutes / 60 * 360;
+			var sdeg = second / 60 * 360;
+			odivh.style.transform = "rotate("+ hdeg +"deg)";
+			odivm.style.transform = "rotate("+ mdeg +"deg)";
+			odivs.style.transform = "rotate("+ sdeg +"deg)";
+		}
+
+	</script>
 
 </html>
