@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>飞机大战</title>
+	<link rel="stylesheet" href="css/flyBattle.css" type="text/css">
+	<script src="js/common.js"></script>
+	<script src="js/game_Engine.js"></script>
+	<script src="js/bullet.js"></script>
+	<script src="js/myPlane.js"></script>
+	<script src="js/enemy.js"></script>
+	<script src="js/reword.js"></script>
+	<script>
+		window.onload = function () {
+			var oUlNode = document.getElementById("list");
+			var oListNode = oUlNode.getElementsByTagName("li");
+
+			for (var i = 0; i < oListNode.length; i++){
+			
+				oListNode[i].onclick = function () {
+					myPlane.gameLevel = this.value;
+
+					reword.speedChange = [this.value,500,1000,800,1200,800];
+					
+					oUlNode.parentNode.removeChild(oUlNode);
+					gameEngine.gameInit().gameStart();
+				}
+			}
+		}
+	</script>
+</head>
+<body>	
+    <!-- 游戏区域 -->
+    <div id="main_body" class="main">
+        <ul id="list">
+            <li value="1000">超级困难</li>
+            <li value="800">非常困难</li>
+            <li value="500">比较困难</li>
+            <li value="340">春哥附体</li>
+        </ul>
+    </div>
+</body>
+</html>

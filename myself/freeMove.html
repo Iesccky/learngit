@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>移动碰撞</title>
+	<style>
+		#box {
+			position: relative;
+			width: 800px;
+			height: 600px;
+			margin: 20px auto;
+			border: 1px solid #000;
+		}
+		#movebox {
+			position: absolute;
+			left: 80px;
+			top: 80px;
+			width: 40px;
+			height:40px;
+			background-color: #BD67F0;
+		}
+		#abstacle_0 {
+			position: absolute;
+			left: 600px;
+			top: 120px;
+			width: 10px;
+			height: 100px;
+			background-color: #090101;
+		}
+		#ctrlbtn{
+			width:600px;
+			height:40px;
+			padding-top: 60px;
+			margin:10px auto;
+		}
+		#ctrlbtn .speed {
+			float:right;
+			margin-left: 14px;
+		}
+		#ctrlbtn .stopBtn {
+			float:right;
+		}
+	</style>
+	<script type="text/javascript" src='myMove.js'></script>
+	<script type="text/javascript">
+	
+//主要以面向过程实现，面向对象于 collision_碰撞 内重写
+		window.onload = function () {
+			
+			var box = document.getElementById("box");						//区域
+			var movebox = document.getElementById("movebox");				//移动对象
+			var sbtn_lr = document.getElementsByTagName("input")[0];
+			var sbtn_ud = document.getElementsByTagName("input")[1];
+			var sbtn_li = document.getElementsByTagName("input")[2];
+			var add_speed = document.getElementsByClassName("speed")[0];
+			var stopBtn = document.getElementsByClassName("stopBtn")[0];
+
+
+//移动对象数据
+			// var bh = parseInt(getStyleVal(movebox,"height"));
+			// var bw = parseInt(getStyleVal(movebox,"width"));
+			getObjBor(movebox);
+			movebox.moveState = 0; //移动方向，0：停止	????----------------------
+
+
+//可移动区域
+			var h = parseInt(getStyleVal(box,"height")) - movebox.h;
+			var w = parseInt(getStyleVal(box,"width")) - movebox.w;
+			var orgSpeed = 64;
+			var tSpeed = orgSpeed;
+
+//碰撞物体的坐标
+			var abstacle_0 = document.getElementById("abstacle_0");
+			getObjBor(abstacle_0);
+//			console.log(abstacle_0.endl + "--"+abstacle_0.endt);
+
+
+			add_speed.onclick = function (){
+				tSpeed /= 2;
+			}
+			sbtn_lr.onclick = function () {
+				move_r(movebox,tSpeed,0);
+			}
+			sbtn_ud.onclick = function () {
+				move_u(movebox,tSpeed,0);
+			}
+			sbtn_li.onclick = function () {
+				// w == 800; h == 600
+				moves1(movebox,tSpeed,w,h,function(){	
+					dia0(movebox,tSpeed,w,h);
+				});
+			}
+			stopBtn.onclick = function (){
+				tSpeed = orgSpeed;
+				stopMove(movebox);
+			}
+
+//dia0 右下角方向的回调函数
+
+			function dia0(movebox,tSpeed,wx,hx){
+				var l_end = parseInt(getStyleVal(movebox,"left"));
+				var t_end = parseInt(getStyleVal(movebox,"top"));
+				if(l_end == wx){
+					moves1(movebox,tSpeed,0,h,function(){
+						dia1(movebox,tSpeed,0,h);
+					});
+				}else if(t_end == hx){
+					moves1(movebox,tSpeed,w,0,function(){
+						dia2(movebox,tSpeed,w,0);
+					});
+				}
+			}
+
+//dia1 左下方向的回调函数	
+
+			function dia1(movebox,tSpeed,wx,hx){
+				var l_end = parseInt(getStyleVal(movebox,"left"));
+				var t_end = parseInt(getStyleVal(movebox,"top"));
+				if(l_end == wx){
+					moves1(movebox,tSpeed,w,h,function(){
+						dia0(movebox,tSpeed,w,h);
+					});
+				}else if(t_end == hx){
+					moves1(movebox,tSpeed,0,0,function(){
+						dia3(movebox,tSpeed,0,0);
+					});
+				}
+			}
+
+//dia2 右上方向的回调函数
+
+			function dia2(movebox,tSpeed,wx,hx){
+				var l_end = parseInt(getStyleVal(movebox,"left"));
+				var t_end = parseInt(getStyleVal(movebox,"top"));
+				if(l_end == wx){
+					moves1(movebox,tSpeed,0,0,function(){
+						dia3(movebox,tSpeed,0,0);			
+					});
+				}else if(t_end == hx){
+					moves1(movebox,tSpeed,w,h,function(){
+						dia0(movebox,tSpeed,w,h);
+					});
+				}
+			}
+
+//dia3 左上方向的回调函数
+
+			function dia3(movebox,tSpeed,wx,hx){
+				var l_end = parseInt(getStyleVal(movebox,"left"));
+				var t_end = parseInt(getStyleVal(movebox,"top"));
+				if(l_end == wx){
+					moves1(movebox,tSpeed,w,0,function(){
+						dia2(movebox,tSpeed,w,0);
+					});
+				}else if(t_end == hx){
+					moves1(movebox,tSpeed,0,h,function(){
+						dia1(movebox,tSpeed,0,h);
+					});
+				}
+			}
+
+//left
+			function move_l(obj,tSpeed,ends){
+				moves(obj,"left",tSpeed,ends,function(){
+					move_r(movebox,tSpeed,0);
+				});
+			}
+//right
+			function move_r(obj,tSpeed,ends){
+				moves(obj,"left",tSpeed,ends,function(){
+					move_l(movebox,tSpeed,w);
+				});
+			}
+//up
+			function move_u(obj,tSpeed,ends){
+				moves(obj,"top",tSpeed,ends,function(){
+					move_d(movebox,tSpeed,h);
+				});
+			}
+//down
+			function move_d(obj,tSpeed,ends){
+				moves(obj,"top",tSpeed,ends,function(){
+					move_u(movebox,tSpeed,0);
+				});
+			}
+
+	
+
+
+//水平、垂直方向的移动
+			function moves(obj,attr,tSpeed,ends,fn){
+
+				clearInterval(obj.timer);
+
+				obj.timer = setInterval (function(){
+					var curr = parseInt(getStyleVal(obj,attr));
+					var sp = 2;							//移动的单位，固定为10
+					if (ends <= curr){
+						sp = -1 * sp;
+	//					console.log("s");
+					}else{
+						sp = sp;
+					}
+					if(curr == ends){
+						clearInterval(obj.timer);
+						console.log(obj.moveState);
+						if(fn){
+							fn();
+						}
+						return;
+					}
+					obj.style[attr] = ( curr + sp ) + "px";
+				},tSpeed);
+			}
+
+// 斜线方向的移动
+
+			function moves1(obj,tSpeed,endl,endt,fn){
+
+				clearInterval(obj.timer);
+
+				obj.timer = setInterval(function(){
+
+					var curr_l = parseInt(getStyleVal(obj,"left"));
+					var curr_t = parseInt(getStyleVal(obj,"top"));
+					var sp_l = 2;
+					var sp_t = 2;
+
+					if (endl <= curr_l){
+						sp_l = -1 * sp_l;
+					}else{
+						sp_l = sp_l;
+					}
+					if (endt <= curr_t){
+						sp_t = -1 * sp_t;
+					}else{
+						sp_t = sp_t;
+					}
+					
+					if( curr_l == endl || curr_t == endt){
+						clearInterval(obj.timer);
+						console.log(obj.moveState);
+						if(fn){
+							fn();
+						}
+						return "";
+					}
+
+					obj.style.left = ( curr_l + sp_l ) + "px";
+					obj.style.top = ( curr_t + sp_t ) + "px";
+
+				},tSpeed);
+			}
+		//--------------end or stop
+			function stopMove(obj){
+				clearInterval(obj.timer);
+			}
+
+
+		}
+	</script>
+</head>
+<body>
+	<div id="ctrlbtn">
+		<input type="button" value="left_right" />
+		<input type="button" value="up_down" />
+		<input type="button" value = "slashMove" />
+		<input type="button" class="speed" value="add_speed"/>
+		<input type="button" class="stopBtn" value="stop"/>
+	</div>
+	<div id="box">
+		<div id ="abstacle_0"></div>
+		<div id ="movebox"></div>
+	</div>
+</body>
+</html>

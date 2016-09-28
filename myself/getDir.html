@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>判断方向</title>
+</head>
+<style>
+	* {
+		margin:0;
+		padding:0;
+	}
+	#box {
+		width: 500px;
+		height: 300px;
+		margin: 100px auto;
+		border: 1px solid #000;
+		text-align: center;
+		line-height: 300px;
+		font-size: 40px;
+	}
+</style>
+<script>
+	window.onload = function () {
+		var box = document.getElementById("box");
+
+		var b_top = -box.offsetTop;
+		var b_left = box.offsetLeft;
+		var b_width = parseInt(getStyleVal(box,"width")) + b_left;
+		var b_height = -parseInt(getStyleVal(box,"height")) + b_top;
+
+		var b_x0 = ( b_left + b_width ) / 2;
+		var b_y0 = ( b_top + b_height ) / 2;
+
+		var k = (b_height - b_top ) / (b_width - b_left);
+
+
+		console.log(k);
+//		console.log(b_top+"-"+b_left+"-"+b_width+"-"+b_height);
+
+		box.onmouseover = function (e) {
+			var e = e || event;
+			var x = e.clientX;
+			var y = -e.clientY;
+
+			var k2 = (y - b_y0) / (x - b_x0);
+
+			if (k2 > k && k2 < -k){
+				if(x > b_x0){  
+					box.innerHTML = "右"; 
+				}else{
+					box.innerHTML = "左";
+				};
+			}else {
+				if( y > b_y0 ){  
+					box.innerHTML = "上"; 
+				}else{
+					box.innerHTML = "下";
+				};
+			}
+		}
+		box.onmouseout = function () {
+			box.innerHTML = "鼠标移入方向判断";
+		}
+
+
+	}
+	function getStyleVal (obj,attr) {
+		return window.getComputedStyle ? window.getComputedStyle(obj)[attr] : obj.currentStyle[attr];
+	}
+</script>
+<body>
+	
+	<div id="box">鼠标移入方向判断</div>
+	
+</body>
+</html>

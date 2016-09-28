@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>collision_碰撞</title>
+	<link rel="stylesheet" type="text/css" href="collision.css" />
+	<script type="text/javascript" src="myMove.js"></script>
+	<script>
+		window.onload = function () {
+	// Btn 
+		var left_right = document.getElementsByClassName('left_right')[0];
+		var up_down = document.getElementsByClassName('up_down')[0];
+		var slashMove = document.getElementsByClassName('slashMove')[0];
+		var speed = document.getElementsByClassName('speed')[0];
+		var stopBtn = document.getElementsByClassName('stopBtn')[0];
+
+	//Obj
+		var moveBox = document.getElementById("movebox");
+		getObjBor(moveBox);
+		moveBox.moveState = 0;
+		moveBox.timer = null;
+		moveBox.turn = 0;
+
+		var moveArea = document.getElementById('box');
+		moveArea.endl = 0;
+		moveArea.endt = 0;
+		moveArea.endw = parseInt(getStyleVal(moveArea,"width")) - moveBox.w;
+		moveArea.endh = parseInt(getStyleVal(moveArea,"height")) - moveBox.h;
+
+		var abst_0 = document.getElementById("abstacle_0");
+		getAbstBor(abst_0,moveBox);
+
+		left_right.onclick = function () {
+			moveBox.moveState = 1;
+			turnDir(moveBox);
+		}
+		up_down.onclick = function () {
+			moveBox.moveState = 2;
+			turnDir(moveBox);
+		}
+		slashMove.onclick = function () {
+			moveBox.moveState = 8;
+			turnDir(moveBox);
+		}
+		stopBtn.onclick = function () {
+			moveBox.moveState = 0;
+			turnDir(moveBox);
+		}
+
+	//改变方向
+		function turnDir(obj){
+			switch (obj.moveState){
+				case 0:
+					clearInterval(obj.timer);
+					break;
+				case 1:
+					moves(moveBox,{"endw":abst_0.endw,"endt":abst_0.endt,"endh":abst_0.endh},{"left":moveArea.endl},40,function(){
+						moveBox.moveState = 3;
+						turnDir(moveBox);
+					});
+					break;
+				case 2:
+					moves(moveBox,{"endw":abst_0.endw,"endl":abst_0.endl,"endh":abst_0.endh},{"top":moveArea.endt},40,function(){
+						moveBox.moveState = 4;
+						turnDir(moveBox);
+					});
+					break;
+				case 3:
+					moves(moveBox,{"endl":abst_0.endl,"endt":abst_0.endt,"endh":abst_0.endh},{"left":moveArea.endw},40,function(){
+						moveBox.moveState = 1;
+						turnDir(moveBox);
+					});
+					break;
+				case 4:
+					moves(moveBox,{"endw":abst_0.endw,"endl":abst_0.endl,"endt":abst_0.endt},{"top":moveArea.endh},40,function(){
+						moveBox.moveState = 2;
+						turnDir(moveBox);
+					});
+					break;
+				case 5:
+					moves(moveBox,
+						{"endw":abst_0.endw,"endl":abst_0.endl,"endt":abst_0.endt,"endh":abst_0.endh},
+						{"top":moveArea.endt,"left":moveArea.endl},40,
+						function(){
+							var l_end = parseInt(getStyleVal(movebox,"left"));
+							var t_end = parseInt(getStyleVal(movebox,"top"));
+							if(l_end == moveArea.endl || (l_end == abst_0.endw && t_end != moveArea.endt)){
+								moveBox.moveState = 6;
+							}else if(t_end == moveArea.endt || (t_end == abst_0.endh && l_end != moveArea.endl)){
+								moveBox.moveState = 8;
+							}
+							turnDir(moveBox);
+					});
+					break;
+				case 6:
+					moves(moveBox,{"endw":abst_0.endw,"endl":abst_0.endl,"endt":abst_0.endt,"endh":abst_0.endh},{"top":moveArea.endt,"left":moveArea.endw},40,function(){
+						var l_end = parseInt(getStyleVal(movebox,"left"));
+						var t_end = parseInt(getStyleVal(movebox,"top"));
+						if(l_end == moveArea.endw || (l_end == abst_0.endl && t_end != moveArea.endw)){
+							moveBox.moveState = 5;
+						}else if(t_end == moveArea.endt || (t_end == abst_0.endh && l_end != moveArea.endt)){
+							moveBox.moveState = 7;
+						}
+						turnDir(moveBox);
+					});
+					break;
+				case 7:
+					moves(moveBox,{"endw":abst_0.endw,"endl":abst_0.endl,"endt":abst_0.endt,"endh":abst_0.endh},{"top":moveArea.endh,"left":moveArea.endw},40,function(){
+						var l_end = parseInt(getStyleVal(movebox,"left"));
+						var t_end = parseInt(getStyleVal(movebox,"top"));
+						if(l_end == moveArea.endw || (l_end == abst_0.endl && t_end != moveArea.enfw)){
+							moveBox.moveState = 8;
+						}else if(t_end == moveArea.endh || (t_end == abst_0.endt && l_end != moveArea.endh)){
+							moveBox.moveState = 6;
+						}
+						turnDir(moveBox);
+					});
+					break;
+				case 8:
+					moves(moveBox,{"endw":abst_0.endw,"endl":abst_0.endl,"endt":abst_0.endt,"endh":abst_0.endh},{"top":moveArea.endh,"left":moveArea.endl},40,function(){
+						var l_end = parseInt(getStyleVal(movebox,"left"));
+						var t_end = parseInt(getStyleVal(movebox,"top"));
+						if(l_end == moveArea.endl || (l_end == abst_0.endw && t_end != moveArea.endh)){
+							moveBox.moveState = 7;
+						}else if(t_end == moveArea.endh || (t_end == abst_0.endt && l_end != moveArea.endh)){
+							moveBox.moveState = 5;
+						}
+						turnDir(moveBox);
+					});
+					break;
+			}
+
+		}	
+
+	
+		function moves(obj,json0,json1,tSpeed,fn){
+
+				clearInterval(obj.timer);
+				obj.timer = setInterval (function(){
+
+
+					var flags = false;
+
+					if(abstJduge(obj,json0)){
+						clearInterval(obj.timer);
+						if (fn){
+							fn();
+						}
+					}
+
+					for (var attr in json1){
+						
+						var iSpeed = 10;
+						var curr = parseInt( getStyleVal (obj,attr));
+
+						if((json1[attr] - curr) > 0){
+							iSpeed = iSpeed;
+						}else if ((json1[attr] - curr) < 0){
+							iSpeed = -1 * iSpeed;
+						}else{
+							iSpeed = 0;
+						}
+						
+						if (curr == json1[attr]){
+//							flags = true;
+							clearInterval(obj.timer);
+
+							if (fn){
+								fn();
+							}					
+						}
+
+						obj.style[attr] = curr + iSpeed + "px";
+
+					}
+				
+				},tSpeed);
+			}
+			
+			function abstJduge (obj,json){
+				obj_l = parseInt(getStyleVal(obj,"left"));
+				obj_t = parseInt(getStyleVal(obj,"top"));
+				switch(obj.moveState){
+					case 1:
+						if( (obj_t <= json.endh && obj_t >= json.endt) && obj_l == json.endw ){
+							return true;
+						}
+						return false;
+						break;
+					case 2:
+						if( (obj_l <= json.endw && obj_l >= json.endl) && obj_t == json.endh ){
+							return true;
+						}
+						return false;
+						break;
+					case 3:
+						if( (obj_t <= json.endh && obj_t >= json.endt) && obj_l == json.endl ){
+							return true;
+						}
+						return false;
+						break;
+					case 4:
+						if( (obj_l <= json.endw && obj_l >= json.endl) && obj_t == json.endt ){
+							return true;
+						}
+						return false;
+						break;
+					case 5:
+						if((obj_l <= json.endw && obj_l >= json.endl) && (obj_t == json.endh)){
+							
+							return true;
+						}else if((obj_t <= json.endh && obj_t >= json.endt) && obj_l == json.endw){
+							
+							return true;
+						}
+						return false;
+						break;
+					case 6:
+						if((obj_t <= json.endh && obj_t >= json.endt) && obj_l == json.endl){
+							return true;
+						}else if((obj_l <= json.endw && obj_l >= json.endl) && obj_t == json.endt){
+							return true;
+						}
+						return false;
+						break;
+					case 7:
+						if( (obj_t <= json.endh && obj_t >= json.endt) && obj_l == json.endl ){
+							return true;
+						}else if((obj_l <= json.endw && obj_l >= json.endl) && obj_t == json.endt){
+							return true;
+						}
+						return false;
+						break;
+					case 8:
+						if( (obj_t <= json.endh && obj_t >= json.endt) && obj_l == json.endw ){
+							
+							return true;
+						}else if((obj_l <= json.endw && obj_l >= json.endl) && obj_t == json.endt){
+							
+							return true;
+						}
+						return false;
+						break;
+				}
+			}
+
+		}
+	</script>
+</head>
+<body>
+	<div id="ctrlbtn">
+		<input type="button" class="left_right" value="left_right" />
+		<input type="button" class="up_down" value="up_down" />
+		<input type="button" class="slashMove" value = "slashMove" />
+		<input type="button" class="speed" value="add_speed"/>
+		<input type="button" class="stopBtn" value="stop"/>
+	</div>
+	<div id="box">
+		<div id ="abstacle_0"></div>
+		<div id ="movebox"></div>
+	</div>
+</body>
+</html>

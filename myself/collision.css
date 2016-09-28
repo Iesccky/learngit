@@ -1,0 +1,52 @@
+		#box {
+			position: relative;
+			width: 1000px;
+			height: 600px;
+			margin: 20px auto;
+			border: 1px solid #000;
+		}
+		#movebox {
+			position: absolute;
+			left: 200px;
+			top: 200px;
+			width: 40px;
+			height:40px;
+			background-color: #BD67F0;
+		}
+		#abstacle_0 {
+			position: absolute;
+			left: 800px;
+			top: 120px;
+			width: 10px;
+			height: 160px;
+			background-color: #090101;
+		}
+		#abstacle_1 {
+			position: absolute;
+			left: 100px;
+			top: 280px;
+			width: 10px;
+			height: 120px;
+			background-color: #C53E49;
+		}
+		#abstacle_2 {
+			position: absolute;
+			left: 300px;
+			top: 160px;
+			width: 160px;
+			height: 10px;
+			background-color: #59D17D;
+		}
+		#ctrlbtn{
+			width:600px;
+			height:40px;
+			padding-top: 60px;
+			margin:10px auto;
+		}
+		#ctrlbtn .speed {
+			float:right;
+			margin-left: 14px;
+		}
+		#ctrlbtn .stopBtn {
+			float:right;
+		}
