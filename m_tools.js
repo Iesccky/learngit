@@ -159,3 +159,41 @@ function createPosition(){
 }
 
 
+// 设置cookie
+	function setCookie (name, val, iday) {
+		var obj = new Date();
+		if (iday != ""){
+			iday = iday;
+		}else {
+			iday = 0;
+		}
+		obj.setDate(obj.getDate() + iday);
+		document.cookie = "" + name + "=" + val + ";expires=" + obj +"; path=/";
+	}
+// 获取cookie
+	function getCookie (name) {
+		/*
+			var str = document.cookie;
+			var arr = str.split("; ");
+			for (var i = 0; i < arr.length; i++){
+				var arr2 = arr[i].split("=");
+				if (cookiename == arr2[0]){
+					return arr2[1];
+				}
+			}
+			return "";
+		*/
+
+		var str = "";
+		var reg = new RegExp("(^| )"+name+"=([^;]*)(;|$)","gi");
+
+		if(str = reg.exec(document.cookie))
+			return(str[2]);
+			return null;
+		}
+	}
+
+// 删除cookie
+	function removeCookie (name){
+		setCookie(name, "", -1);
+	}	
